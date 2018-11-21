@@ -1,3 +1,6 @@
-<p>
-  painel-central works!
-</p>
+<ng-container *ngFor="let indice of lista">
+  <div *ngIf="indice % puzzle.colunas == 0">
+    <!--<br>-->
+  </div>
+  <ng-container>{{puzzle.valores[indice]}}</ng-container>
+</ng-container>

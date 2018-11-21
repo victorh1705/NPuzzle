@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {Puzzle} from './puzzle';
 
 @Component({
   selector: 'app-painel-central',
@@ -7,9 +8,22 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PainelCentralComponent implements OnInit {
 
-  constructor() { }
+  puzzle: Puzzle;
+  lista: Array<number>;
+
+  constructor() {
+  }
 
   ngOnInit() {
+    this.puzzle = new Puzzle();
+    this.lista = new Array<number>(this.puzzle.colunas * this.puzzle.linhas);
+    for (let i = 0; i < this.lista.length; i++) {
+      this.lista[i] = i;
+    }
+
+    if (!this.puzzle.rodando) {
+      this.puzzle.embaralhar();
+    }
   }
 
 }
