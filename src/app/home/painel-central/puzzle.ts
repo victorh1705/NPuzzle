@@ -11,31 +11,13 @@ export class Puzzle {
   valorMenorDistancia = 1000;
   qtdTrocasEmbaralhamento = 50;
   posicaoVazia = null;
-  constanteDeSobra = 1000000;
+  constanteDeSobra = 1000;
   passosSolucao = 0;
   passoAtual = 0;
   passosRestantes = 0;
   fatorMultiplicacao = 1;
-  xInicial = -3.0;
-  yInicial = 12.43;
-  xTextos = -9.5;
-  yResultados = 5.0;
-  yMenu = 14.13;
-  ladoQuadarado = 1.36;
   fatorRamificacao = 0.0;
   custoSolucao = 0.0;
-  tempoExecucao = 0.0;
-  nosExpandidosTexto: string[40];
-  nosVisitadosTexto: string[40];
-  profundidadeTexto: string[40];
-  fatorRamificacaoTexto: string[40];
-  custoSolucaoTexto: string[40];
-  tempoExecucaoTexto: string[40];
-  algoritmoEscolhidoTexto: string[40];
-  passosRestantesTexto: string[40];
-  algoritmoEscolhido: string;
-  lPressionado = false;
-  cPressionado = false;
   resultadoObtido = false;
   embaralhado = false;
   rodando = false;
@@ -59,7 +41,6 @@ export class Puzzle {
     this.voltouProPai = false;
     console.log('Executando backtracking, aguarde...\n');
     // this.tempoInicial = clock();
-    // console.time('tempo');
     let movimentoRealizado: number;
     let fracasso = false;
     let sucesso = false;
@@ -148,7 +129,8 @@ export class Puzzle {
     this.profundidadeAtual = 0;
     console.log('Executando busca em profundidade, aguarde...\n');
     // tempoInicial = clock();
-    let fracasso = false, sucesso = false, rodando = true;
+    let fracasso = false, sucesso = false;
+    this.rodando = true;
     this.limpaEstadosVisitados();
     this.adicionaPaiListaAbertos(-1, true);
     while (!sucesso && !fracasso) {
@@ -165,7 +147,7 @@ export class Puzzle {
     }
     // tempoFinal = clock();
     this.resultadoObtido = true;
-    rodando = false;
+    this.rodando = false;
     this.embaralhado = false;
     this.nosExpandidos = this.posicaoAtualVisitados;
     this.nosVisitados = this.contaEstadosFechados() + 1;
@@ -186,7 +168,8 @@ export class Puzzle {
     this.valorMenorDistancia = 1000;
     console.log('Executando busca gulosa, aguarde...\n');
     // this.tempoInicial = clock();
-    let fracasso = false, sucesso = false, rodando = true;
+    let fracasso = false, sucesso = false;
+    this.rodando = true;
     this.limpaEstadosVisitados();
     this.adicionaPaiListaAbertos(-1, false);
     while (!sucesso && !fracasso) {
@@ -203,7 +186,7 @@ export class Puzzle {
     }
     // this.tempoFinal = clock();
     this.resultadoObtido = true;
-    rodando = false;
+    this.rodando = false;
     this.embaralhado = false;
     this.nosExpandidos = this.posicaoAtualVisitados;
     this.nosVisitados = this.contaEstadosFechados() + 1;
@@ -222,7 +205,8 @@ export class Puzzle {
     this.valorMenorDistancia = 1000;
     console.log('Executando A*, aguarde...\n');
     // this.tempoInicial = clock();
-    let fracasso = false, sucesso = false, rodando = true;
+    let fracasso = false, sucesso = false;
+    this.rodando = true;
     this.limpaEstadosVisitados();
     this.adicionaPaiListaAbertos(-1, false);
     while (!sucesso && !fracasso) {
@@ -239,7 +223,7 @@ export class Puzzle {
     }
     // this.tempoFinal = clock();
     this.resultadoObtido = true;
-    rodando = false;
+    this.rodando = false;
     this.embaralhado = false;
     this.nosExpandidos = this.posicaoAtualVisitados;
     this.nosVisitados = this.contaEstadosFechados() + 1;
@@ -250,8 +234,137 @@ export class Puzzle {
     // system("cls");
   }
 
+  embaralhar(): void {
+    this.limpaEstadosVisitados();
+    this.ordenar();
+    for (let j = 0; j < this.qtdTrocasEmbaralhamento; j++) {
+      if (!this.realizaMovimento(Math.floor(Math.random() * 100) % 4)) {
+        j--;
+      }
+    }
+    if (this.verificaSolucao()) {
+      while (!this.realizaMovimento(Math.floor(Math.random() * 100) % 4)) {
+      }
+    }
+    /*valores[0]=4;
+    valores[1]=-1;
+    valores[2]=1;
+    valores[3]=3;
+    valores[4]=2;
+    valores[5]=5;
+    posicaoVazia=1;*/
+    for (let i = 0; i < this.linhas * this.colunas; i++) {
+      this.valoresBackup[i] = this.valores[i];
+    }
+    this.resultadoObtido = false;
+    this.embaralhado = true;
+  }
 
-  obterProximoEstado(tipoEscolha: string): boolean {
+  prepararAnimacao(): void {
+    let idCaminho: number;
+    this.passosSolucao = 1;
+    this.passoAtual = 0;
+    const auxCaminhoSolucao = new Array<number>(this.constanteDeSobra);
+    idCaminho = this.obterIdSolucao() - 1;
+    auxCaminhoSolucao[0] = idCaminho;
+    for (let i = 1; idCaminho !== -2; i++) {
+      idCaminho = this.estadosVisitados[idCaminho].idPai - 1;
+      if (idCaminho !== -2) {
+        auxCaminhoSolucao[i] = idCaminho;
+        this.passosSolucao++;
+      }
+    }
+    this.caminhoSolucao = null;
+    this.caminhoSolucao = new Array<number>(this.passosSolucao);
+    for (let i = 0; i < this.passosSolucao; i++) {
+      this.caminhoSolucao[i] = auxCaminhoSolucao[this.passosSolucao - 1 - i];
+    }
+    this.habilitarBotaoVParaCaminhar = true;
+    this.realizarAnimacao();
+  }
+
+  escolherRegra(): number {
+    const regras = [0, 2, 3, 1];
+    for (let i = 0; i < 4; i++) {
+      if (this.realizaMovimento(regras[i])) {
+        return regras[i];
+      }
+    }
+    return -1;
+  }
+
+  realizarAnimacao(): void {
+    if (this.passoAtual < this.passosSolucao) {
+      for (let i = 0; i < this.linhas * this.colunas; i++) {
+        this.valores[i] = this.estadosVisitados[this.caminhoSolucao[this.passoAtual]].estado[i];
+        if (this.valores[i] === -1) {
+          this.posicaoVazia = i;
+        }
+      }
+      this.passoAtual++;
+      if (this.passoAtual === this.passosSolucao) {
+        this.habilitarBotaoVParaCaminhar = false;
+      }
+    }
+  }
+
+  atualiza(): void {
+    this.valores = new Array<number>(this.linhas * this.colunas);
+    this.valoresBackup = new Array<number>(this.linhas * this.colunas);
+    this.auxVerificaLoop = new Array<number>(this.linhas * this.colunas);
+    this.estadosVisitados = new Array<Item>(this.linhas * this.colunas * this.constanteDeSobra * this.fatorMultiplicacao);
+    this.caminhoSolucao = new Array<number>(this.constanteDeSobra);
+  }
+
+  ordenar(): void {
+    this.resultadoObtido = false;
+    this.habilitarBotaoVParaCaminhar = false;
+    this.embaralhado = false;
+    this.valores = new Array<number>(this.linhas * this.colunas);
+    let i: number;
+    for (i = 0; i < (this.linhas * this.colunas) - 1; i++) {
+      this.valores[i] = i + 1;
+    }
+    this.valores[i] = -1;
+    this.posicaoVazia = i;
+  }
+
+  realizaTroca(posicaoVazia: number, novaPosicaoVazia: number): boolean {
+    if (this.verificaNaoGeraLoop(posicaoVazia, novaPosicaoVazia)) {
+      this.valores[posicaoVazia] = this.valores[novaPosicaoVazia];
+      this.valores[novaPosicaoVazia] = -1;
+      return true;
+    }
+    return false;
+  }
+
+  contaEstadosFechados(): number {
+    let contador = 0;
+    for (let i = 0; i < this.posicaoAtualVisitados; i++) {
+      if (!this.estadosVisitados[i].ativo) {
+        contador++;
+      }
+    }
+    return contador;
+  }
+
+  contaEstadosAbertos(): number {
+    let contador = 0;
+    for (let i = 0; i < this.posicaoAtualVisitados; i++) {
+      if (this.estadosVisitados[i].ativo) {
+        contador++;
+      }
+    }
+    return contador;
+  }
+
+  limpaEstadosVisitados(): void {
+    this.estadosVisitados = null;
+    this.posicaoAtualVisitados = 0;
+    this.estadosVisitados = new Array<Item>(this.linhas * this.colunas * this.constanteDeSobra);
+  }
+
+  private obterProximoEstado(tipoEscolha: string): boolean {
     if (tipoEscolha === 'F') {
       for (let i = 0; i < this.posicaoAtualVisitados; i++) {
         if (this.estadosVisitados[i].ativo) {
@@ -391,8 +504,7 @@ export class Puzzle {
     }
   }
 
-
-  voltaProPai(): void {
+  private voltaProPai(): void {
     let idPai = -1;
     for (let i = this.posicaoAtualVisitados - 1; i >= 0 && idPai === -1; i--) {
       if (this.estadosVisitados[i].ativo) {
@@ -414,20 +526,11 @@ export class Puzzle {
     this.voltouProPai = true;
   }
 
-  escolherRegra(): number {
-    const regras = [0, 2, 3, 1];
-    for (let i = 0; i < 4; i++) {
-      if (this.realizaMovimento(regras[i])) {
-        return regras[i];
-      }
-    }
-    return -1;
-  }
-
-  adicionaPaiListaAbertos(idPai: number, buscaProfundidade: boolean): void {
+  private adicionaPaiListaAbertos(idPai: number, buscaProfundidade: boolean): void {
     const novoEstado = new Item();
     novoEstado.id = this.posicaoAtualVisitados + 1;
     novoEstado.idPai = idPai;
+    novoEstado.estado = new Array<number>(this.linhas * this.colunas);
     for (let i = 0; i < this.linhas * this.colunas; i++) {
       novoEstado.estado[i] = this.valores[i];
     }
@@ -436,10 +539,10 @@ export class Puzzle {
     this.estadosVisitados[this.posicaoAtualVisitados] = novoEstado;
     this.posicaoAtualVisitados++;
     this.profundidadeAtual = 1;
-    this.adicionaFilhosListaAbertos(this.posicaoAtualVisitados, false);
+    this.adicionaFilhosListaAbertos(this.posicaoAtualVisitados, buscaProfundidade);
   }
 
-  adicionaFilhosListaAbertos(idPai: number, buscaProfundidade: boolean): void {
+  private adicionaFilhosListaAbertos(idPai: number, buscaProfundidade: boolean): void {
     const regras = [0, 2, 3, 1];
     if (buscaProfundidade) {
       regras[0] = 1;
@@ -452,7 +555,7 @@ export class Puzzle {
     }
   }
 
-  adicionaNovoEstadoVisitado(idPai: number): void {
+  private adicionaNovoEstadoVisitado(idPai: number): void {
     const novoEstado = new Item();
     novoEstado.id = this.posicaoAtualVisitados + 1;
     novoEstado.idPai = idPai;
@@ -465,6 +568,7 @@ export class Puzzle {
     this.estadosVisitados[this.posicaoAtualVisitados] = novoEstado;
     // prletf("id: %d , idPai: %d , profundidade: %d , estado : ",novoEstado.id,
     // novoEstado.idPai, novoEstado.profundidade);
+    novoEstado.estado = new Array<number>(this.linhas * this.colunas);
     for (let i = 0; i < this.linhas * this.colunas; i++) {
       novoEstado.estado[i] = this.valores[i];
       // prletf("%d ",novoEstado.estado[i]);
@@ -480,49 +584,8 @@ export class Puzzle {
 
   }
 
-
-  embaralhar(): void {
-    this.limpaEstadosVisitados();
-    this.ordenar();
-    for (let j = 0; j < this.qtdTrocasEmbaralhamento; j++) {
-      if (!this.realizaMovimento(Math.floor(Math.random() * 100) % 4)) {
-        j--;
-      }
-    }
-    if (this.verificaSolucao()) {
-      while (!this.realizaMovimento(Math.floor(Math.random() * 100) % 4)) {
-      }
-    }
-    /*valores[0]=4;
-    valores[1]=-1;
-    valores[2]=1;
-    valores[3]=3;
-    valores[4]=2;
-    valores[5]=5;
-    posicaoVazia=1;*/
-    for (let i = 0; i < this.linhas * this.colunas; i++) {
-      this.valoresBackup[i] = this.valores[i];
-    }
-    this.resultadoObtido = false;
-    this.rodando = true;
-  }
-
-  ordenar(): void {
-    this.resultadoObtido = false;
-    this.habilitarBotaoVParaCaminhar = false;
-    this.embaralhado = false;
-    this.valores = new Array<number>(this.linhas * this.colunas);
-    let i: number;
-    for (i = 0; i < (this.linhas * this.colunas) - 1; i++) {
-      this.valores[i] = i + 1;
-    }
-    this.valores[i] = -1;
-    this.posicaoVazia = i;
-  }
-
-
 // -----------------------------FUNCOES AUXILIARES------------------
-  realizaMovimento(movimento: number): boolean {
+  private realizaMovimento(movimento: number): boolean {
     if (movimento === 0) {
       if (this.posicaoVazia + this.colunas < (this.linhas * this.colunas)) {
         if (this.realizaTroca(this.posicaoVazia, this.posicaoVazia + this.colunas)) {
@@ -558,7 +621,7 @@ export class Puzzle {
     }
   }
 
-  geraFilho(movimento: number, idPai: number): void {
+  private geraFilho(movimento: number, idPai: number): void {
     if (movimento === 0) {
       if (this.posicaoVazia + this.colunas < (this.linhas * this.colunas)) {
         this.adicionaFilhoSeNaoGerarLoop(this.posicaoVazia, this.posicaoVazia + this.colunas, idPai);
@@ -578,16 +641,7 @@ export class Puzzle {
     }
   }
 
-  realizaTroca(posicaoVazia: number, novaPosicaoVazia: number): boolean {
-    if (this.verificaNaoGeraLoop(posicaoVazia, novaPosicaoVazia)) {
-      this.valores[posicaoVazia] = this.valores[novaPosicaoVazia];
-      this.valores[novaPosicaoVazia] = -1;
-      return true;
-    }
-    return false;
-  }
-
-  adicionaFilhoSeNaoGerarLoop(posicaoVazia: number, novaPosicaoVazia: number, idPai: number): void {
+  private adicionaFilhoSeNaoGerarLoop(posicaoVazia: number, novaPosicaoVazia: number, idPai: number): void {
     let naoGera = false;
     let adiciona = true;
     for (let i = 0; i < this.linhas * this.colunas; i++) {
@@ -596,6 +650,7 @@ export class Puzzle {
     this.auxVerificaLoop[posicaoVazia] = this.auxVerificaLoop[novaPosicaoVazia];
     this.auxVerificaLoop[novaPosicaoVazia] = -1;
     for (let i = 0; i < this.posicaoAtualVisitados && adiciona; i++) {
+      console.warn('visitado e Adicionado');
       if (!this.estadosVisitados[i].ativo) {
         naoGera = false;
         for (let j = 0; j < (this.linhas * this.colunas) && !naoGera; j++) {
@@ -617,6 +672,7 @@ export class Puzzle {
       novoEstado.distManhattan = this.calculaDistanciaManhattan();
       // printf("id: %d , idPai: %d, profundidade: %d , distancia: %d , :
       //  ",novoEstado.id, novoEstado.idPai, novoEstado.profundidade, novoEstado.distManhattan);
+      novoEstado.estado = new Array<number>(this.linhas * this.colunas);
       for (let i = 0; i < this.linhas * this.colunas; i++) {
         novoEstado.estado[i] = this.auxVerificaLoop[i];
         // printf("%d ",novoEstado.estado[i]);
@@ -631,7 +687,7 @@ export class Puzzle {
     }
   }
 
-  calculaDistanciaManhattan(): number {
+  private calculaDistanciaManhattan(): number {
     const distanciaUnitaria = [];
     let soma = 0;
     for (let i = 0; i < this.linhas * this.colunas; i++) {
@@ -646,7 +702,7 @@ export class Puzzle {
     return soma;
   }
 
-  verificaNaoGeraLoop(posicaoVazia: number, novaPosicaoVazia: number): boolean {
+  private verificaNaoGeraLoop(posicaoVazia: number, novaPosicaoVazia: number): boolean {
     let naoGera = false;
     for (let i = 0; i < this.linhas * this.colunas; i++) {
       this.auxVerificaLoop[i] = this.valores[i];
@@ -667,7 +723,7 @@ export class Puzzle {
     return true;
   }
 
-  verificaSolucao(): boolean {
+  private verificaSolucao(): boolean {
     for (let i = 0; i < (this.linhas * this.colunas) - 1; i++) {
       if (this.valores[i] !== i + 1) {
         return false;
@@ -677,42 +733,6 @@ export class Puzzle {
     this.passosRestantes = this.custoSolucao;
     return true;
   }
-
-  verificaFracasso(): boolean {
-    for (let j = 0; j < (this.linhas * this.colunas); j++) {
-      if (this.valoresBackup[j] !== this.valores[j]) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  contaEstadosFechados(): number {
-    let contador = 0;
-    for (let i = 0; i < this.posicaoAtualVisitados; i++) {
-      if (!this.estadosVisitados[i].ativo) {
-        contador++;
-      }
-    }
-    return contador;
-  }
-
-  contaEstadosAbertos(): number {
-    let contador = 0;
-    for (let i = 0; i < this.posicaoAtualVisitados; i++) {
-      if (this.estadosVisitados[i].ativo) {
-        contador++;
-      }
-    }
-    return contador;
-  }
-
-  limpaEstadosVisitados(): void {
-    this.estadosVisitados = null;
-    this.posicaoAtualVisitados = 0;
-    this.estadosVisitados = new Array<Item>(this.linhas * this.colunas * this.constanteDeSobra);
-  }
-
 
   obterIdSolucao(): number {
     let solucao = true;
@@ -746,5 +766,14 @@ export class Puzzle {
       }
     }
     estadosVisitadosAumentarTamanho = null;
+  }
+
+  private verificaFracasso(): boolean {
+    for (let j = 0; j < (this.linhas * this.colunas); j++) {
+      if (this.valoresBackup[j] !== this.valores[j]) {
+        return false;
+      }
+    }
+    return true;
   }
 }

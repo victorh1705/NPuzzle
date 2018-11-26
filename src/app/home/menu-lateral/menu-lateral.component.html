@@ -1,3 +1,13 @@
-<p>
-  menu-lateral works!
-</p>
+<div class="ui-g-12 ui-md-4">
+  <h4 class="first">Coluna: {{coluna}}</h4>
+  <p-slider [(ngModel)]="coluna" [min]="2" [max]="10" (onChange)="atualizar.emit()"></p-slider>
+
+  <h4 class="first">Linha: {{linha}}</h4>
+  <p-slider [(ngModel)]="linha" [min]="2" [max]="10" (onChange)="atualizar.emit()"></p-slider>
+
+  <h4>Selecione um método</h4>
+  <p-dropdown [options]="opcoes" [(ngModel)]="metodoSelecionado" placeholder="Selecione um Método"></p-dropdown>
+  <div>
+    <button pButton class="botao" type="button" label="Calcular" (click)="fazBusca.emit($event)"></button>
+  </div>
+</div>

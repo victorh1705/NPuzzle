@@ -1,6 +1,10 @@
-<ng-container *ngFor="let indice of lista">
-  <div *ngIf="indice % puzzle.colunas == 0">
-    <!--<br>-->
-  </div>
-  <ng-container>{{puzzle.valores[indice]}}</ng-container>
-</ng-container>
+<mat-grid-list cols={{puzzle.colunas}} rowHeight="fit" class="grid-central">
+  <ng-container *ngFor="let indice of lista">
+    <ng-container *ngIf="listaPrint[indice] === -1">
+      <mat-grid-tile class="coringa normal">{{listaPrint[indice]}}</mat-grid-tile>
+    </ng-container>
+    <ng-container *ngIf="listaPrint[indice] !== -1">
+      <mat-grid-tile class="normal">{{listaPrint[indice]}}</mat-grid-tile>
+    </ng-container>
+  </ng-container>
+</mat-grid-list>

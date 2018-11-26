@@ -1,0 +1,15 @@
+mat-grid-tile {
+  background: lightblue;
+}
+
+.coringa {
+  background-color: black;
+}
+
+.normal {
+  /*width: 100px !important;*/
+}
+
+.grid-central {
+  height: 70%;
+}
