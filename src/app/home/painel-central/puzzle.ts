@@ -35,12 +35,15 @@ export class Puzzle {
 
 
   backtracking(): void {
+    console.log('\n\n-------------------------------------------------');
+    console.log('Executando backtracking, aguarde...\n');
+    this.tempoInicial = new Date();
+    const inicio: number = this.tempoInicial.getTime();
+    console.log('Início: ' + inicio / 1000 + ' segundos');
     this.idPaiAtual = 0;
     this.profundidade = 0;
     this.profundidadeAtual = 0;
     this.voltouProPai = false;
-    console.log('Executando backtracking, aguarde...\n');
-    // this.tempoInicial = clock();
     let movimentoRealizado: number;
     let fracasso = false;
     let sucesso = false;
@@ -52,7 +55,7 @@ export class Puzzle {
     }
     while (!sucesso && !fracasso) {
       if ((this.posicaoAtualVisitados % 25000) === 0) {
-        console.log('Aguarde mais um pouco...\n');
+        // console.log('Aguarde mais um pouco...\n');
       }
       movimentoRealizado = this.escolherRegra();
       if (movimentoRealizado !== -1) {
@@ -73,8 +76,6 @@ export class Puzzle {
         }
       }
     }
-    // this.tempoFinal = clock();
-    // const duracao = console.timeEnd('tempo');
     this.resultadoObtido = true;
     this.rodando = false;
     this.embaralhado = false;
@@ -82,26 +83,38 @@ export class Puzzle {
     this.nosVisitados = this.posicaoAtualVisitados + 1;
     this.fatorRamificacao = 1.00;
     this.fatorMultiplicacao = 1;
-    // this.tempoExecucao = (duracao) / 1000.0;
-    // system("cls");
+    this.tempoFinal = new Date();
+    const termino: number = this.tempoFinal.getTime();
+    console.log('Término: ' + termino / 1000 + ' segundos');
+    const duracao = ( termino - inicio ) / 1000;
+    console.log('Duração: ' + duracao + ' segundos');
+    console.log('-------------------------------------------------');
+    console.log('Nós Expandidos: ' + this.nosExpandidos);
+    console.log('Nós Visitados: ' + this.nosVisitados);
+    console.log('Fator Ramificação: ' + this.fatorRamificacao);
+    console.log('Custo da Solução: ' + this.custoSolucao);
+    console.log('-------------------------------------------------\n\n');
   }
 
   buscaLargura(largura: boolean): void {
-    this.profundidade = 0;
-    this.profundidadeAtual = 0;
+    console.log('\n\n-------------------------------------------------');
     if (largura) {
       console.log('Executando busca em largura, aguarde...\n');
     } else {
       console.log('Executando busca ordenada, aguarde...\n');
     }
-    // tempoInicial = clock();
+    this.tempoInicial = new Date();
+    const inicio: number = this.tempoInicial.getTime();
+    console.log('Início: ' + inicio / 1000 + ' segundos');
+    this.profundidade = 0;
+    this.profundidadeAtual = 0;
     let fracasso = false, sucesso = false;
     this.rodando = true;
     this.limpaEstadosVisitados();
     this.adicionaPaiListaAbertos(-1, false);
     while (!sucesso && !fracasso) {
       if ((this.posicaoAtualVisitados % 25000) === 0) {
-        console.log('Aguarde mais um pouco...\n');
+        // console.log('Aguarde mais um pouco...\n');
       }
       if (this.verificaSolucao()) {
         sucesso = true;
@@ -116,27 +129,39 @@ export class Puzzle {
     this.embaralhado = false;
     this.nosExpandidos = this.posicaoAtualVisitados;
     this.nosVisitados = this.contaEstadosFechados() + 1;
-// tempoExecucao=(tempoFinal-tempoInicial)/1000.0;
     this.fatorRamificacao = this.nosExpandidos / this.nosVisitados;
     this.fatorMultiplicacao = 1;
     this.profundidade--;
-// system("cls");
+    this.tempoFinal = new Date();
+    const termino: number = this.tempoFinal.getTime();
+    console.log('Término: ' + termino / 1000 + ' segundos');
+    const duracao = ( termino - inicio ) / 1000;
+    console.log('Duração: ' + duracao + ' segundos');
+    console.log('-------------------------------------------------');
+    console.log('Nós Expandidos: ' + this.nosExpandidos);
+    console.log('Nós Visitados: ' + this.nosVisitados);
+    console.log('Fator Ramificação: ' + this.fatorRamificacao);
+    console.log('Custo da Solução: ' + this.custoSolucao);
+    console.log('-------------------------------------------------\n\n');
   }
 
 
   buscaProfundidade(): void {
+    console.log('\n\n-------------------------------------------------');
+    console.log('Executando busca em profundidade, aguarde...\n');
+    this.tempoInicial = new Date();
+    const inicio: number = this.tempoInicial.getTime();
+    console.log('Início: ' + inicio / 1000 + ' segundos');
     this.profundidade = 0;
     this.profundidadeAtual = 0;
-    console.log('Executando busca em profundidade, aguarde...\n');
-    // tempoInicial = clock();
     let fracasso = false, sucesso = false;
     this.rodando = true;
     this.limpaEstadosVisitados();
     this.adicionaPaiListaAbertos(-1, true);
     while (!sucesso && !fracasso) {
-      if ((this.posicaoAtualVisitados % 25000) === 0) {
-        console.log('Aguarde mais um pouco...\n');
-      }
+      // if ((this.posicaoAtualVisitados % 25000) === 0) {
+        // console.log('Aguarde mais um pouco...\n');
+      // }
       if (this.verificaSolucao()) {
         sucesso = true;
       } else {
@@ -145,16 +170,25 @@ export class Puzzle {
         }
       }
     }
-    // tempoFinal = clock();
     this.resultadoObtido = true;
     this.rodando = false;
     this.embaralhado = false;
     this.nosExpandidos = this.posicaoAtualVisitados;
     this.nosVisitados = this.contaEstadosFechados() + 1;
-    // this.tempoExecucao = (this.tempoFinal - this.tempoInicial) / 1000.0;
     this.fatorRamificacao = this.nosExpandidos / this.nosVisitados;
     this.fatorMultiplicacao = 1;
     this.profundidade--;
+    this.tempoFinal = new Date();
+    const termino: number = this.tempoFinal.getTime();
+    console.log('Término: ' + termino / 1000 + ' segundos');
+    const duracao = ( termino - inicio ) / 1000;
+    console.log('Duração: ' + duracao + ' segundos');
+    console.log('-------------------------------------------------');
+    console.log('Nós Expandidos: ' + this.nosExpandidos);
+    console.log('Nós Visitados: ' + this.nosVisitados);
+    console.log('Fator Ramificação: ' + this.fatorRamificacao);
+    console.log('Custo da Solução: ' + this.custoSolucao);
+    console.log('-------------------------------------------------\n\n');
   }
 
   buscaOrdenada(): void {
@@ -162,20 +196,23 @@ export class Puzzle {
   }
 
   buscaGulosa(): void {
+    console.log('\n\n-------------------------------------------------');
+    console.log('Executando busca gulosa, aguarde...\n');
+    this.tempoInicial = new Date();
+    const inicio: number = this.tempoInicial.getTime();
+    console.log('Início: ' + inicio / 1000 + ' segundos');
     this.profundidade = 0;
     this.profundidadeAtual = 0;
     this.indiceMenorDistManhattan = -1;
     this.valorMenorDistancia = 1000;
-    console.log('Executando busca gulosa, aguarde...\n');
-    // this.tempoInicial = clock();
     let fracasso = false, sucesso = false;
     this.rodando = true;
     this.limpaEstadosVisitados();
     this.adicionaPaiListaAbertos(-1, false);
     while (!sucesso && !fracasso) {
-      if ((this.posicaoAtualVisitados % 25000) === 0) {
-        console.log('Aguarde mais um pouco...\n');
-      }
+      // if ((this.posicaoAtualVisitados % 25000) === 0) {
+        // console.log('Aguarde mais um pouco...\n');
+      // }
       if (this.verificaSolucao()) {
         sucesso = true;
       } else {
@@ -184,35 +221,46 @@ export class Puzzle {
         }
       }
     }
-    // this.tempoFinal = clock();
     this.resultadoObtido = true;
     this.rodando = false;
     this.embaralhado = false;
     this.nosExpandidos = this.posicaoAtualVisitados;
     this.nosVisitados = this.contaEstadosFechados() + 1;
-    // this.tempoExecucao = (this.tempoFinal - this.tempoInicial) / 1000.0;
     this.fatorRamificacao = this.nosExpandidos / this.nosVisitados;
     this.fatorMultiplicacao = 1;
     this.profundidade--;
-    // system("cls");
+    this.tempoFinal = new Date();
+    const termino: number = this.tempoFinal.getTime();
+    console.log('Término: ' + termino / 1000 + ' segundos');
+    const duracao = ( termino - inicio ) / 1000;
+    console.log('Duração: ' + duracao + ' segundos');
+    console.log('-------------------------------------------------');
+    console.log('Nós Expandidos: ' + this.nosExpandidos);
+    console.log('Nós Visitados: ' + this.nosVisitados);
+    console.log('Fator Ramificação: ' + this.fatorRamificacao);
+    console.log('Custo da Solução: ' + this.custoSolucao);
+    console.log('-------------------------------------------------\n\n');
   }
 
 
   aEstrela(): void {
+    console.log('\n\n-------------------------------------------------');
+    console.log('Executando A*, aguarde...\n');
+    this.tempoInicial = new Date();
+    const inicio: number = this.tempoInicial.getTime();
+    console.log('Início: ' + inicio / 1000 + ' segundos');
     this.profundidade = 0;
     this.profundidadeAtual = 0;
     this.indiceMenorDistManhattan = -1;
     this.valorMenorDistancia = 1000;
-    console.log('Executando A*, aguarde...\n');
-    // this.tempoInicial = clock();
     let fracasso = false, sucesso = false;
     this.rodando = true;
     this.limpaEstadosVisitados();
     this.adicionaPaiListaAbertos(-1, false);
     while (!sucesso && !fracasso) {
-      if ((this.posicaoAtualVisitados % 25000) === 0) {
-        console.log('Aguarde mais um pouco...\n');
-      }
+      // if ((this.posicaoAtualVisitados % 25000) === 0) {
+      //   console.log('Aguarde mais um pouco...\n');
+      // }
       if (this.verificaSolucao()) {
         sucesso = true;
       } else {
@@ -221,17 +269,25 @@ export class Puzzle {
         }
       }
     }
-    // this.tempoFinal = clock();
     this.resultadoObtido = true;
     this.rodando = false;
     this.embaralhado = false;
     this.nosExpandidos = this.posicaoAtualVisitados;
     this.nosVisitados = this.contaEstadosFechados() + 1;
-    // this.tempoExecucao = (this.tempoFinal - this.tempoInicial) / 1000.0;
     this.fatorRamificacao = this.nosExpandidos / this.nosVisitados;
     this.fatorMultiplicacao = 1;
     this.profundidade--;
-    // system("cls");
+    this.tempoFinal = new Date();
+    const termino: number = this.tempoFinal.getTime();
+    console.log('Término: ' + termino / 1000 + ' segundos');
+    const duracao = ( termino - inicio ) / 1000;
+    console.log('Duração: ' + duracao + ' segundos');
+    console.log('-------------------------------------------------');
+    console.log('Nós Expandidos: ' + this.nosExpandidos);
+    console.log('Nós Visitados: ' + this.nosVisitados);
+    console.log('Fator Ramificação: ' + this.fatorRamificacao);
+    console.log('Custo da Solução: ' + this.custoSolucao);
+    console.log('-------------------------------------------------\n\n');
   }
 
   embaralhar(): void {
@@ -258,6 +314,7 @@ export class Puzzle {
     }
     this.resultadoObtido = false;
     this.embaralhado = true;
+    // console.log(this.valoresBackup);
   }
 
   prepararAnimacao(): void {
@@ -650,7 +707,7 @@ export class Puzzle {
     this.auxVerificaLoop[posicaoVazia] = this.auxVerificaLoop[novaPosicaoVazia];
     this.auxVerificaLoop[novaPosicaoVazia] = -1;
     for (let i = 0; i < this.posicaoAtualVisitados && adiciona; i++) {
-      console.warn('visitado e Adicionado');
+      // console.warn('visitado e Adicionado');
       if (!this.estadosVisitados[i].ativo) {
         naoGera = false;
         for (let j = 0; j < (this.linhas * this.colunas) && !naoGera; j++) {
@@ -729,9 +786,12 @@ export class Puzzle {
         return false;
       }
     }
-    this.custoSolucao = this.estadosVisitados[this.obterIdSolucao() - 1].profundidade;
-    this.passosRestantes = this.custoSolucao;
-    return true;
+    if (this.estadosVisitados[this.obterIdSolucao() - 1]) {
+      this.custoSolucao = this.estadosVisitados[this.obterIdSolucao() - 1].profundidade;
+      this.passosRestantes = this.custoSolucao;
+      return true;
+    }
+    return false;
   }
 
   obterIdSolucao(): number {
